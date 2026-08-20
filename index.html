@@ -3,263 +3,709 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Freedom Roadmap - خارطة الحرية المالية</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Financial Freedom Roadmap - منصة الحرية المالية المتكاملة</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome CDN -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
-        body { font-family: 'Tajawal', sans-serif; }
+        body {
+            font-family: 'Tajawal', 'Inter', sans-serif;
+        }
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+        .nav-link.active {
+            background-color: #059669;
+            color: #ffffff;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Header / Navbar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3 space-x-reverse">
-                <i class="fa-solid fa-chart-line text-emerald-600 text-2xl"></i>
-                <h1 class="text-xl font-bold text-slate-800" id="app-title">خارطة الحرية المالية</h1>
-            </div>
+    <!-- Header & Navigation Bar -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
             
-            <div class="flex items-center space-x-3 space-x-reverse">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3 space-x-reverse cursor-pointer" onclick="navigateTo('dashboard')">
+                <div class="bg-emerald-500 p-2 rounded-xl text-slate-900 font-bold">
+                    <i class="fa-solid fa-vault text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight" id="app-title">منصة الحرية المالية</h1>
+                    <p class="text-xs text-slate-400" id="app-subtitle">Financial Freedom Roadmap</p>
+                </div>
+            </div>
+
+            <!-- Page Navigation Tabs -->
+            <nav class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl overflow-x-auto max-w-full">
+                <button onclick="navigateTo('dashboard')" id="nav-dashboard" class="nav-link active px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-chart-pie"></i> <span data-i18n="navDashboard">الرئيسية</span>
+                </button>
+                <button onclick="navigateTo('budget')" id="nav-budget" class="nav-link px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-wallet"></i> <span data-i18n="navBudget">الميزانية</span>
+                </button>
+                <button onclick="navigateTo('debt')" id="nav-debt" class="nav-link px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-hand-holding-dollar"></i> <span data-i18n="navDebt">خطة الديون</span>
+                </button>
+                <button onclick="navigateTo('investment')" id="nav-investment" class="nav-link px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-arrow-trend-up"></i> <span data-i18n="navInvest">الاستثمار</span>
+                </button>
+                <button onclick="navigateTo('converter')" id="nav-converter" class="nav-link px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-coins"></i> <span data-i18n="navConverter">العملات</span>
+                </button>
+                <button onclick="navigateTo('guide')" id="nav-guide" class="nav-link px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-graduation-cap"></i> <span data-i18n="navGuide">الدليل المالي</span>
+                </button>
+            </nav>
+
+            <!-- Global Controls: Currency & Language -->
+            <div class="flex items-center gap-2">
                 <!-- Currency Selector -->
-                <select id="currency-select" onchange="updateCurrency()" class="bg-slate-100 border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <select id="currency-select" onchange="updateCurrency()" class="bg-slate-800 text-white border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <option value="USD" data-symbol="$" data-rate="1">USD ($)</option>
                     <option value="EGP" data-symbol="ج.م" data-rate="48.5">EGP (ج.م)</option>
                     <option value="SAR" data-symbol="ر.س" data-rate="3.75">SAR (ر.س)</option>
                     <option value="AED" data-symbol="د.إ" data-rate="3.67">AED (د.إ)</option>
+                    <option value="KWD" data-symbol="د.ك" data-rate="0.31">KWD (د.ك)</option>
                     <option value="EUR" data-symbol="€" data-rate="0.92">EUR (€)</option>
                 </select>
 
                 <!-- Language Toggle Button -->
-                <button onclick="toggleLanguage()" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2">
+                <button onclick="toggleLanguage()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs md:text-sm font-semibold transition flex items-center gap-1.5">
                     <i class="fa-solid fa-globe"></i>
                     <span id="lang-btn-text">English</span>
                 </button>
             </div>
+
         </div>
     </header>
 
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
 
-        <!-- Progress Steps -->
-        <div class="grid grid-cols-3 gap-4 mb-8 text-center">
-            <div id="step-tab-1" class="p-3 bg-emerald-600 text-white rounded-xl shadow-sm font-semibold text-sm md:text-base flex items-center justify-center gap-2">
-                <span>1</span> <span data-i18n="step1">الميزانية والإيرادات</span>
+        <!-- ================= PAGE 1: DASHBOARD ================= -->
+        <section id="page-dashboard" class="page-section active space-y-6">
+            <!-- Welcome Banner -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white p-6 md:p-8 rounded-2xl shadow-lg border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <span class="bg-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2 inline-block" data-i18n="dashBadge">نظامك المالي الشخصي</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold" data-i18n="dashTitle">مرحباً بك في طريق التحرر المالي</h2>
+                    <p class="text-slate-300 text-sm mt-1 max-w-xl" data-i18n="dashDesc">تابع ملخص حساباتك المالية، وراقب خطة التخلص من الديون وبناء الثروة المستدامة في مكان واحد.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="navigateTo('budget')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="updateData">تحديث البيانات</span>
+                    </button>
+                </div>
             </div>
-            <div id="step-tab-2" class="p-3 bg-white text-slate-500 rounded-xl shadow-sm font-semibold text-sm md:text-base border border-slate-200 flex items-center justify-center gap-2">
-                <span>2</span> <span data-i18n="step2">خطة الديون</span>
-            </div>
-            <div id="step-tab-3" class="p-3 bg-white text-slate-500 rounded-xl shadow-sm font-semibold text-sm md:text-base border border-slate-200 flex items-center justify-center gap-2">
-                <span>3</span> <span data-i18n="step3">استثمار الفائض</span>
-            </div>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <!-- Left Side: Input Controls (2 Columns on Large Screens) -->
-            <div class="lg:col-span-2 space-y-6">
+            <!-- KPI Metric Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Net Surplus Card -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase" data-i18n="kpiSurplus">الفائض الشهري الصافي</p>
+                        <h3 class="text-2xl font-black text-emerald-600 mt-1" id="dash-surplus-val">0.00 $</h3>
+                        <p class="text-xs text-slate-400 mt-1" data-i18n="kpiSurplusSub">متاح للديون والاستثمار</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                </div>
 
-                <!-- STEP 1: Budget Section -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-bold mb-4 text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-wallet text-emerald-600"></i>
-                        <span data-i18n="budgetTitle">1. الميزانية الصافية والشهرية</span>
-                    </h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="monthlyIncome">الدخل الشهرى الصافي:</label>
-                            <div class="relative">
-                                <input type="number" id="income" value="3000" oninput="calculateBudget()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 pl-8 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                <span class="currency-symbol absolute left-3 top-2.5 text-slate-400">$</span>
+                <!-- Total Debt Card -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase" data-i18n="kpiDebt">إجمالي المتبقي من الديون</p>
+                        <h3 class="text-2xl font-black text-rose-600 mt-1" id="dash-debt-val">0.00 $</h3>
+                        <p class="text-xs text-slate-400 mt-1" id="dash-debt-free-time">خالٍ تماماً خلال 0 شهر</p>
+                    </div>
+                    <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                </div>
+
+                <!-- Future Wealth Card -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase" data-i18n="kpiWealth">الثروة المتوقعة مستقبلاً</p>
+                        <h3 class="text-2xl font-black text-indigo-600 mt-1" id="dash-wealth-val">0.00 $</h3>
+                        <p class="text-xs text-slate-400 mt-1" data-i18n="kpiWealthSub">بعد الاستثمار والنمو المركب</p>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-gem"></i>
+                    </div>
+                </div>
+
+                <!-- Emergency Fund Status -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-500 uppercase" data-i18n="kpiEmergency">صندوق الطوارئ المقترح</p>
+                        <h3 class="text-2xl font-black text-amber-600 mt-1" id="dash-emergency-val">0.00 $</h3>
+                        <p class="text-xs text-slate-400 mt-1" data-i18n="kpiEmergencySub">يغطي 6 أشهر مصاريف</p>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Wealth Trajectory Chart -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-area text-emerald-600"></i>
+                        <span data-i18n="dashChartTitle">مسار تسارع النمو المالي والثروة</span>
+                    </h3>
+                    <div class="h-72 w-full">
+                        <canvas id="dashWealthChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Budget Ratio Pie Chart -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <h3 class="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-indigo-600"></i>
+                        <span data-i18n="dashPieTitle">توزيع الدخل (قاعدة 50/30/20)</span>
+                    </h3>
+                    <div class="h-56 relative my-auto">
+                        <canvas id="dashBudgetPieChart"></canvas>
+                    </div>
+                    <div class="text-center text-xs text-slate-500 mt-2" data-i18n="pieNotice">
+                        مقارنة التوزيع الحالي مع المعايير المالية النموذجية
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: BUDGET TRACKER ================= -->
+        <section id="page-budget" class="page-section space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-emerald-600"></i>
+                    <span data-i18n="budgetMainTitle">إدارة الإيرادات والمصاريف الشهري</span>
+                </h2>
+                <p class="text-slate-500 text-sm mb-6" data-i18n="budgetMainDesc">أدخل تفاصيل دخلك الصافي ومصاريفك الثابتة والمتغيرة لحساب الفائض بدقة.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Income Input Card -->
+                    <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100">
+                        <h3 class="font-bold text-emerald-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-hand-holding-dollar"></i> <span data-i18n="incomeSection">مصادِر الدخل</span>
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="salaryInput">الراتب الوظيفي الصافي:</label>
+                                <div class="relative">
+                                    <input type="number" id="budget-salary" value="3500" oninput="calculateAll()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 pl-8 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <span class="currency-symbol absolute left-3 top-2.5 text-slate-400 text-xs">$</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="extraIncomeInput">أرباح ودخل إضافي:</label>
+                                <div class="relative">
+                                    <input type="number" id="budget-extra-income" value="500" oninput="calculateAll()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 pl-8 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <span class="currency-symbol absolute left-3 top-2.5 text-slate-400 text-xs">$</span>
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="fixedExpenses">المصاريف الثابتة (إيجار، فواتير):</label>
-                            <div class="relative">
-                                <input type="number" id="expenses-fixed" value="1200" oninput="calculateBudget()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 pl-8 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                <span class="currency-symbol absolute left-3 top-2.5 text-slate-400">$</span>
+                    <!-- Fixed Expenses Input Card -->
+                    <div class="bg-rose-50/50 p-5 rounded-2xl border border-rose-100">
+                        <h3 class="font-bold text-rose-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-house-lock"></i> <span data-i18n="fixedExpensesSection">الاحتياجات الأساسية (الثابتة)</span>
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="rentInput">السكن والإيجار والفواتير:</label>
+                                <div class="relative">
+                                    <input type="number" id="budget-rent" value="1200" oninput="calculateAll()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 pl-8 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <span class="currency-symbol absolute left-3 top-2.5 text-slate-400 text-xs">$</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="groceriesInput">الطعام والمؤن والأساسيات:</label>
+                                <div class="relative">
+                                    <input type="number" id="budget-groceries" value="600" oninput="calculateAll()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 pl-8 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <span class="currency-symbol absolute left-3 top-2.5 text-slate-400 text-xs">$</span>
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="variableExpenses">المصاريف المتغيرة (طعام، ترفيه):</label>
-                            <div class="relative">
-                                <input type="number" id="expenses-variable" value="800" oninput="calculateBudget()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 pl-8 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                                <span class="currency-symbol absolute left-3 top-2.5 text-slate-400">$</span>
+                    <!-- Variable Expenses Input Card -->
+                    <div class="bg-amber-50/50 p-5 rounded-2xl border border-amber-100">
+                        <h3 class="font-bold text-amber-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-bag-shopping"></i> <span data-i18n="varExpensesSection">الرغبات والكماليات (المتغيرة)</span>
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="funInput">الترفيه والتسوق والخروج:</label>
+                                <div class="relative">
+                                    <input type="number" id="budget-fun" value="400" oninput="calculateAll()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 pl-8 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <span class="currency-symbol absolute left-3 top-2.5 text-slate-400 text-xs">$</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="otherVarInput">مصاريف أخرى متنوعة:</label>
+                                <div class="relative">
+                                    <input type="number" id="budget-other" value="200" oninput="calculateAll()" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 pl-8 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <span class="currency-symbol absolute left-3 top-2.5 text-slate-400 text-xs">$</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- STEP 2: Debts Section -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-hand-holding-dollar text-red-500"></i>
-                            <span data-i18n="debtTitle">2. إضافة الديون والالتزامات</span>
+                <!-- 50/30/20 Rule Analysis Box -->
+                <div class="mt-8 bg-slate-900 text-white p-6 rounded-2xl space-y-4">
+                    <h3 class="text-base font-bold flex items-center gap-2 text-emerald-400">
+                        <i class="fa-solid fa-sliders"></i> <span data-i18n="rule503020Title">تحليل ميزانيتك بأسلوب (50 / 30 / 20)</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                            <p class="text-xs text-slate-400" data-i18n="ruleNeeds">الاحتياجات (الهدف 50%)</p>
+                            <h4 class="text-xl font-extrabold text-white mt-1" id="analysis-needs-val">0.00 $</h4>
+                            <span class="text-xs px-2 py-0.5 rounded-full mt-2 inline-block" id="analysis-needs-badge">0%</span>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                            <p class="text-xs text-slate-400" data-i18n="ruleWants">الرغبات (الهدف 30%)</p>
+                            <h4 class="text-xl font-extrabold text-white mt-1" id="analysis-wants-val">0.00 $</h4>
+                            <span class="text-xs px-2 py-0.5 rounded-full mt-2 inline-block" id="analysis-wants-badge">0%</span>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                            <p class="text-xs text-slate-400" data-i18n="ruleSavings">الفائض والادخار (الهدف 20%)</p>
+                            <h4 class="text-xl font-extrabold text-emerald-400 mt-1" id="analysis-savings-val">0.00 $</h4>
+                            <span class="text-xs px-2 py-0.5 rounded-full mt-2 inline-block" id="analysis-savings-badge">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: DEBT PAYOFF ENGINE ================= -->
+        <section id="page-debt" class="page-section space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-snowplow text-rose-600"></i>
+                            <span data-i18n="debtPageTitle">استراتيجيات التحرر والسداد السريع للديون</span>
                         </h2>
-                        <button onclick="addDebtRow()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1">
-                            <i class="fa-solid fa-plus text-xs"></i> <span data-i18n="addDebt">إضافة دين</span>
-                        </button>
+                        <p class="text-slate-500 text-sm" data-i18n="debtPageDesc">قارن بين استراتيجية كرة الثلج والانهيار لمعرفة الخطة الأسرع للخروج من الالتزامات.</p>
                     </div>
 
-                    <!-- Strategy Selection -->
-                    <div class="flex gap-4 mb-4 bg-slate-50 p-2 rounded-xl">
-                        <label class="flex-1 text-center py-2 px-3 rounded-lg cursor-pointer text-sm font-medium transition" id="strat-snowball-label">
-                            <input type="radio" name="strategy" value="snowball" checked onchange="updateStrategy('snowball')" class="hidden">
-                            <span data-i18n="snowball">كرة الثلج (الأصغر أولاً)</span>
-                        </label>
-                        <label class="flex-1 text-center py-2 px-3 rounded-lg cursor-pointer text-sm font-medium transition" id="strat-avalanche-label">
-                            <input type="radio" name="strategy" value="avalanche" onchange="updateStrategy('avalanche')" class="hidden">
-                            <span data-i18n="avalanche">الانهيار (الأعلى فائدة)</span>
-                        </label>
+                    <button onclick="addDebtRow()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 self-start md:self-auto">
+                        <i class="fa-solid fa-plus text-xs"></i> <span data-i18n="addDebtBtn">إضافة دين جديد</span>
+                    </button>
+                </div>
+
+                <!-- Strategy Toggle Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <button onclick="updateStrategy('snowball')" id="strat-btn-snowball" class="p-4 rounded-2xl border-2 transition text-right flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-sm" data-i18n="snowTitle">كرة الثلج (Snowball)</h4>
+                            <p class="text-xs text-slate-500 mt-0.5" data-i18n="snowDesc">سداد الدين الأصغر أولاً للتحفيز النفسي السريع.</p>
+                        </div>
+                        <i class="fa-solid fa-snowflake text-2xl text-blue-500"></i>
+                    </button>
+
+                    <button onclick="updateStrategy('avalanche')" id="strat-btn-avalanche" class="p-4 rounded-2xl border-2 transition text-right flex items-center justify-between">
+                        <div>
+                            <h4 class="font-bold text-sm" data-i18n="avaTitle">جبل الانهيار (Avalanche)</h4>
+                            <p class="text-xs text-slate-500 mt-0.5" data-i18n="avaDesc">سداد الدين الأعلى فائدة أولاً لتوفير أكبر قدر من المال.</p>
+                        </div>
+                        <i class="fa-solid fa-volcano text-2xl text-amber-500"></i>
+                    </button>
+                </div>
+
+                <!-- Debts List Container -->
+                <div class="space-y-3" id="debt-items-list">
+                    <!-- Rows dynamic generated via JS -->
+                </div>
+
+                <!-- Payoff Summary Box -->
+                <div class="mt-8 bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase" data-i18n="payoffEstimateLabel">النتيجة المتوقعة للسداد:</span>
+                        <h3 class="text-2xl font-black text-slate-800 mt-1" id="payoff-time-result">0 شهر</h3>
+                        <p class="text-xs text-slate-500 mt-1" data-i18n="payoffBoostNotice">تم تسريع الخطة بإضافة الفائض الشهري الصافي كدفعات إضافية تلقائياً.</p>
+                    </div>
+                    <button onclick="navigateTo('investment')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-3 rounded-xl font-bold text-sm transition flex items-center gap-2">
+                        <span data-i18n="goToInvestBtn">الانتقال إلى خطة استثمار الفائض بعد السداد</span>
+                        <i class="fa-solid fa-arrow-left dir-flip"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 4: INVESTMENT SIMULATOR ================= -->
+        <section id="page-investment" class="page-section space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-piggy-bank text-indigo-600"></i>
+                    <span data-i18n="investPageTitle">حاسبة استثمار الفائض ومضاعفة الثروة</span>
+                </h2>
+                <p class="text-slate-500 text-sm mb-6" data-i18n="investPageDesc">شاهد قوة الفائدة المركبة واستثمار الفائض الشهري تحول مبالغك البسيطة لثروة مستدامة.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="monthlyInvestAmount">المبلغ المستثمر شهرياً:</label>
+                        <div class="relative">
+                            <input type="number" id="invest-monthly-val" value="500" oninput="calculateAll()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 pl-8 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <span class="currency-symbol absolute left-3 top-2.5 text-slate-400 text-xs">$</span>
+                        </div>
                     </div>
 
-                    <div id="debts-container" class="space-y-3">
-                        <!-- Dynamic Debt Rows will be added here -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="annualReturnRate">معدل العائد السنوي المتوقع (%):</label>
+                        <input type="number" id="invest-return-rate" value="8" step="0.5" oninput="calculateAll()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="investPeriodYears">سنوات الاستثمار:</label>
+                        <input type="number" id="invest-years-val" value="15" oninput="calculateAll()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     </div>
                 </div>
 
-                <!-- STEP 3: Investment Strategy -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-bold mb-4 text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-piggy-bank text-indigo-600"></i>
-                        <span data-i18n="investTitle">3. خطة الاستثمار المستقبلي</span>
+                <!-- Output Chart -->
+                <div class="bg-slate-900 p-6 rounded-2xl text-white">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-slate-800 pb-4">
+                        <div>
+                            <p class="text-xs text-slate-400" data-i18n="totalWealthForecast">إجمالي القيمة المستقبلية للثروة:</p>
+                            <h3 class="text-3xl font-black text-emerald-400 mt-1" id="invest-total-wealth-output">0.00 $</h3>
+                        </div>
+                        <div class="text-right sm:text-left">
+                            <p class="text-xs text-slate-400" data-i18n="totalProfitEarned">صافي الأرباح المركبة:</p>
+                            <h4 class="text-xl font-bold text-indigo-400 mt-1" id="invest-total-interest-output">0.00 $</h4>
+                        </div>
+                    </div>
+
+                    <div class="h-72 w-full">
+                        <canvas id="investGrowthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 5: CURRENCY CONVERTER ================= -->
+        <section id="page-converter" class="page-section space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-w-2xl mx-auto">
+                <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-right-arrow-left text-emerald-600"></i>
+                    <span data-i18n="converterPageTitle">حاسبة وتحويل العملات</span>
+                </h2>
+                <p class="text-slate-500 text-sm mb-6" data-i18n="converterPageDesc">قم بتحويل المبالغ بين مختلف العملات العالمية والعربية بأسعار الصرف المعتمدة.</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="convertAmount">المبلغ المراد تحويله:</label>
+                        <input type="number" id="convert-amount-input" value="1000" oninput="runCurrencyConversion()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-base font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="convertFrom">من عملة:</label>
+                            <select id="convert-from-select" onchange="runCurrencyConversion()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="USD">USD - دولار أمريكي</option>
+                                <option value="EGP">EGP - جنيه مصري</option>
+                                <option value="SAR">SAR - ريال سعودي</option>
+                                <option value="AED">AED - درهم إماراتي</option>
+                                <option value="KWD">KWD - دينار كويتي</option>
+                                <option value="EUR">EUR - يورو أوروبي</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="convertTo">إلى عملة:</label>
+                            <select id="convert-to-select" onchange="runCurrencyConversion()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="EGP" selected>EGP - جنيه مصري</option>
+                                <option value="USD">USD - دولار أمريكي</option>
+                                <option value="SAR">SAR - ريال سعودي</option>
+                                <option value="AED">AED - درهم إماراتي</option>
+                                <option value="KWD">KWD - دينار كويتي</option>
+                                <option value="EUR">EUR - يورو أوروبي</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Result Card -->
+                    <div class="mt-6 bg-slate-900 text-white p-6 rounded-2xl text-center">
+                        <span class="text-xs text-slate-400 block mb-1" data-i18n="convertedResultLabel">النتيجة المحولة:</span>
+                        <h3 class="text-3xl font-black text-emerald-400" id="conversion-result-output">0.00</h3>
+                        <p class="text-xs text-slate-500 mt-2" id="conversion-rate-info">1 USD = 48.5 EGP</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 6: FINANCIAL GUIDE & FAQ ================= -->
+        <section id="page-guide" class="page-section space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-book-bookmark text-indigo-600"></i>
+                        <span data-i18n="guidePageTitle">الدليل والنصائح المالية الذكية</span>
                     </h2>
+                    <p class="text-slate-500 text-sm mt-1" data-i18n="guidePageDesc">قواعد ذهبية مجربة لمساعدتك في اتخاذ قرارات مالية صائبة وتفادي الأخطاء الشائعة.</p>
+                </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="expectedReturn">العائد السنوي المتوقع (%):</label>
-                            <input type="number" id="invest-rate" value="8" step="0.5" oninput="calculateAll()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-600 mb-1" data-i18n="investYears">مدة الاستثمار (سنوات):</label>
-                            <input type="number" id="invest-years" value="10" oninput="calculateAll()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Rule 1 Card -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center font-bold text-lg">1</div>
+                        <h3 class="font-bold text-slate-800" data-i18n="rule1Title">بناء صندوق الطوارئ أولاً</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed" data-i18n="rule1Desc">قبل بدء الاستثمار، احتفظ بمبلغ يغطي من 3 إلى 6 أشهر من مصاريفك الأساسية في حساب سهل الوصول لحمايتك من الأزمات المفاجئة.</p>
+                    </div>
+
+                    <!-- Rule 2 Card -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center font-bold text-lg">2</div>
+                        <h3 class="font-bold text-slate-800" data-i18n="rule2Title">التخلص من الديون عالية الفائدة</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed" data-i18n="rule2Desc">ديون البطاقات الائتمانية والقروض الشخصية تتآكل أرباحك، سدادها يعادل الحصول على عائد استثماري مضمون بنفس نسبة الفائدة.</p>
+                    </div>
+
+                    <!-- Rule 3 Card -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="w-10 h-10 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center font-bold text-lg">3</div>
+                        <h3 class="font-bold text-slate-800" data-i18n="rule3Title">قاعدة الاستثمار المنتظم (DCA)</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed" data-i18n="rule3Desc">استثمر جزءاً ثابتاً من دخلك شهرياً بانتظام بغض النظر عن تقلبات السوق، هذا يقلل المخاطر ويعظم الفائدة المركبة طويلة الأجل.</p>
+                    </div>
+
+                    <!-- Rule 4 Card -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                        <div class="w-10 h-10 bg-rose-100 text-rose-700 rounded-xl flex items-center justify-center font-bold text-lg">4</div>
+                        <h3 class="font-bold text-slate-800" data-i18n="rule4Title">تجنب تضخم مستوى المعيشة</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed" data-i18n="rule4Desc">عند زيادة راتبك أو حصولك على مكافأة، وجه الزيادة نحو الادخار والاستثمار مباشرة بدلاً من زيادة مصاريفك الترفيهية اليومية.</p>
                     </div>
                 </div>
-
             </div>
+        </section>
 
-            <!-- Right Side: Dashboard / Results (1 Column) -->
-            <div class="space-y-6">
-                
-                <!-- Financial Summary Card -->
-                <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                    <h3 class="text-sm font-medium text-slate-400 mb-1" data-i18n="surplusTitle">الفائض الشهري المتاح للديون/الاستثمار</h3>
-                    <div class="text-3xl font-extrabold text-emerald-400 mb-4" id="surplus-amount">0.00 $</div>
-
-                    <div class="border-t border-slate-800 pt-4 space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-slate-400" data-i18n="debtFreeIn">التحرر التام من الديون:</span>
-                            <span class="font-bold text-white" id="debt-free-time">0 شهور</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400" data-i18n="futureWealth">الثروة المتوقعة بعد الخطة:</span>
-                            <span class="font-bold text-emerald-400" id="future-wealth">0.00 $</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart Container -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h4 class="text-sm font-bold text-slate-700 mb-4" data-i18n="chartTitle">مسار تسارع الثروة عبر الزمن</h4>
-                    <canvas id="wealthChart" class="w-full h-64"></canvas>
-                </div>
-
-            </div>
-
-        </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p id="footer-text">© 2026 جميع الحقوق محفوظة - تم التطوير بواسطة M.Ahmed</p>
+            <div class="flex gap-4">
+                <a href="https://github.com/mrahmed22296-gif/Financial-calc" target="_blank" class="hover:text-emerald-600 transition flex items-center gap-1">
+                    <i class="fa-brands fa-github"></i> GitHub Repository
+                </a>
+            </div>
+        </div>
+    </footer>
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Language Translations Object
+        // Language Dictionary
         const i18n = {
             ar: {
-                appTitle: "خارطة الحرية المالية",
-                langBtn: "English",
-                step1: "الميزانية والإيرادات",
-                step2: "خطة الديون",
-                step3: "استثمار الفائض",
-                budgetTitle: "1. الميزانية الصافية والشهرية",
-                monthlyIncome: "الدخل الشهري الصافي:",
-                fixedExpenses: "المصاريف الثابتة (إيجار، فواتير):",
-                variableExpenses: "المصاريف المتغيرة (طعام، ترفيه):",
-                debtTitle: "2. إضافة الديون والالتزامات",
-                addDebt: "إضافة دين",
-                snowball: "كرة الثلج (الأصغر أولاً)",
-                avalanche: "الانهيار (الأعلى فائدة)",
-                investTitle: "3. خطة الاستثمار المستقبلي",
-                expectedReturn: "العائد السنوي المتوقع (%):",
-                investYears: "مدة الاستثمار (سنوات):",
-                surplusTitle: "الفائض الشهري المتاح للديون/الاستثمار",
-                debtFreeIn: "التحرر التام من الديون:",
-                futureWealth: "الثروة المتوقعة بعد الخطة:",
-                chartTitle: "مسار تسارع الثروة عبر الزمن",
-                debtName: "اسم الدين",
-                balance: "المبلغ",
-                minPayment: "الحد الأدنى للقسط",
-                rate: "الفائدة %"
+                navDashboard: "الرئيسية",
+                navBudget: "الميزانية",
+                navDebt: "خطة الديون",
+                navInvest: "الاستثمار",
+                navConverter: "العملات",
+                navGuide: "الدليل المالي",
+                dashBadge: "نظامك المالي الشخصي",
+                dashTitle: "مرحباً بك في طريق التحرر المالي",
+                dashDesc: "تابع ملخص حساباتك المالية، وراقب خطة التخلص من الديون وبناء الثروة المستدامة في مكان واحد.",
+                updateData: "تحديث البيانات",
+                kpiSurplus: "الفائض الشهري الصافي",
+                kpiSurplusSub: "متاح للديون والاستثمار",
+                kpiDebt: "إجمالي المتبقي من الديون",
+                kpiWealth: "الثروة المتوقعة مستقبلاً",
+                kpiWealthSub: "بعد الاستثمار والنمو المركب",
+                kpiEmergency: "صندوق الطوارئ المقترح",
+                kpiEmergencySub: "يغطي 6 أشهر مصاريف",
+                dashChartTitle: "مسار تسارع النمو المالي والثروة",
+                dashPieTitle: "توزيع الدخل (قاعدة 50/30/20)",
+                pieNotice: "مقارنة التوزيع الحالي مع المعايير المالية النموذجية",
+                budgetMainTitle: "إدارة الإيرادات والمصاريف الشهري",
+                budgetMainDesc: "أدخل تفاصيل دخلك الصافي ومصاريفك الثابتة والمتغيرة لحساب الفائض بدقة.",
+                incomeSection: "مصادِر الدخل",
+                salaryInput: "الراتب الوظيفي الصافي:",
+                extraIncomeInput: "أرباح ودخل إضافي:",
+                fixedExpensesSection: "الاحتياجات الأساسية (الثابتة)",
+                rentInput: "السكن والإيجار والفواتير:",
+                groceriesInput: "الطعام والمؤن والأساسيات:",
+                varExpensesSection: "الرغبات والكماليات (المتغيرة)",
+                funInput: "الترفيه والتسوق والخروج:",
+                otherVarInput: "مصاريف أخرى متنوعة:",
+                rule503020Title: "تحليل ميزانيتك بأسلوب (50 / 30 / 20)",
+                ruleNeeds: "الاحتياجات (الهدف 50%)",
+                ruleWants: "الرغبات (الهدف 30%)",
+                ruleSavings: "الفائض والادخار (الهدف 20%)",
+                debtPageTitle: "استراتيجيات التحرر والسداد السريع للديون",
+                debtPageDesc: "قارن بين استراتيجية كرة الثلج والانهيار لمعرفة الخطة الأسرع للخروج من الالتزامات.",
+                addDebtBtn: "إضافة دين جديد",
+                snowTitle: "كرة الثلج (Snowball)",
+                snowDesc: "سداد الدين الأصغر أولاً للتحفيز النفسي السريع.",
+                avaTitle: "جبل الانهيار (Avalanche)",
+                avaDesc: "سداد الدين الأعلى فائدة أولاً لتوفير أكبر قدر من المال.",
+                payoffEstimateLabel: "النتيجة المتوقعة للسداد:",
+                payoffBoostNotice: "تم تسريع الخطة بإضافة الفائض الشهري الصافي كدفعات إضافية تلقائياً.",
+                goToInvestBtn: "الانتقال إلى خطة استثمار الفائض بعد السداد",
+                investPageTitle: "حاسبة استثمار الفائض ومضاعفة الثروة",
+                investPageDesc: "شاهد قوة الفائدة المركبة واستثمار الفائض الشهري تحول مبالغك البسيطة لثروة مستدامة.",
+                monthlyInvestAmount: "المبلغ المستثمر شهرياً:",
+                annualReturnRate: "معدل العائد السنوي المتوقع (%):",
+                investPeriodYears: "سنوات الاستثمار:",
+                totalWealthForecast: "إجمالي القيمة المستقبلية للثروة:",
+                totalProfitEarned: "صافي الأرباح المركبة:",
+                converterPageTitle: "حاسبة وتحويل العملات",
+                converterPageDesc: "قم بتحويل المبالغ بين مختلف العملات العالمية والعربية بأسعار الصرف المعتمدة.",
+                convertAmount: "المبلغ المراد تحويله:",
+                convertFrom: "من عملة:",
+                convertTo: "إلى عملة:",
+                convertedResultLabel: "النتيجة المحولة:",
+                guidePageTitle: "الدليل والنصائح المالية الذكية",
+                guidePageDesc: "قواعد ذهبية مجربة لمساعدتك في اتخاذ قرارات مالية صائبة وتفادي الأخطاء الشائعة.",
+                rule1Title: "بناء صندوق الطوارئ أولاً",
+                rule1Desc: "قبل بدء الاستثمار، احتفظ بمبلغ يغطي من 3 إلى 6 أشهر من مصاريفك الأساسية في حساب سهل الوصول لحمايتك من الأزمات المفاجئة.",
+                rule2Title: "التخلص من الديون عالية الفائدة",
+                rule2Desc: "ديون البطاقات الائتمانية والقروض الشخصية تتآكل أرباحك، سدادها يعادل الحصول على عائد استثماري مضمون بنفس نسبة الفائدة.",
+                rule3Title: "قاعدة الاستثمار المنتظم (DCA)",
+                rule3Desc: "استثمر جزءاً ثابتاً من دخلك شهرياً بانتظام بغض النظر عن تقلبات السوق، هذا يقلل المخاطر ويعظم الفائدة المركبة طويلة الأجل.",
+                rule4Title: "تجنب تضخم مستوى المعيشة",
+                rule4Desc: "عند زيادة راتبك أو حصولك على مكافأة، وجه الزيادة نحو الادخار والاستثمار مباشرة بدلاً من زيادة مصاريفك الترفيهية اليومية."
             },
             en: {
-                appTitle: "Financial Freedom Roadmap",
-                langBtn: "العربية",
-                step1: "Budget",
-                step2: "Debt Payoff",
-                step3: "Investment",
-                budgetTitle: "1. Net Monthly Budget",
-                monthlyIncome: "Net Monthly Income:",
-                fixedExpenses: "Fixed Expenses (Rent, Bills):",
-                variableExpenses: "Variable Expenses (Food, Fun):",
-                debtTitle: "2. Debts & Liabilities",
-                addDebt: "Add Debt",
-                snowball: "Snowball (Smallest First)",
-                avalanche: "Avalanche (Highest Interest)",
-                investTitle: "3. Future Investment Plan",
-                expectedReturn: "Expected Annual Return (%):",
-                investYears: "Investment Period (Years):",
-                surplusTitle: "Monthly Surplus for Debt/Invest",
-                debtFreeIn: "Debt-Free In:",
-                futureWealth: "Projected Wealth:",
-                chartTitle: "Wealth Acceleration Trajectory",
-                debtName: "Debt Name",
-                balance: "Balance",
-                minPayment: "Min Payment",
-                rate: "Interest %"
+                navDashboard: "Dashboard",
+                navBudget: "Budget",
+                navDebt: "Debt Plan",
+                navInvest: "Investment",
+                navConverter: "Currencies",
+                navGuide: "Financial Guide",
+                dashBadge: "Your Personal Financial OS",
+                dashTitle: "Welcome to Your Financial Freedom Journey",
+                dashDesc: "Track your financial summary, eliminate debt faster, and compound your wealth in one place.",
+                updateData: "Update Data",
+                kpiSurplus: "Net Monthly Surplus",
+                kpiSurplusSub: "Available for debt & investing",
+                kpiDebt: "Total Remaining Debt",
+                kpiWealth: "Projected Future Wealth",
+                kpiWealthSub: "Via compound growth",
+                kpiEmergency: "Target Emergency Fund",
+                kpiEmergencySub: "Covers 6 months expenses",
+                dashChartTitle: "Wealth Acceleration Trajectory",
+                dashPieTitle: "Income Split (50/30/20 Rule)",
+                pieNotice: "Comparing current budget against standard financial benchmarks",
+                budgetMainTitle: "Monthly Income & Expenses Manager",
+                budgetMainDesc: "Enter your net income, fixed, and variable expenses to calculate precise monthly surplus.",
+                incomeSection: "Income Sources",
+                salaryInput: "Net Salary Income:",
+                extraIncomeInput: "Side Hustle & Extra Income:",
+                fixedExpensesSection: "Needs & Fixed Expenses",
+                rentInput: "Housing, Rent & Utilities:",
+                groceriesInput: "Groceries & Supplies:",
+                varExpensesSection: "Wants & Variable Expenses",
+                funInput: "Entertainment & Shopping:",
+                otherVarInput: "Other Misc Expenses:",
+                rule503020Title: "50/30/20 Budget Breakdown",
+                ruleNeeds: "Needs (Target 50%)",
+                ruleWants: "Wants (Target 30%)",
+                ruleSavings: "Surplus / Savings (Target 20%)",
+                debtPageTitle: "Accelerated Debt Payoff Strategies",
+                debtPageDesc: "Compare Snowball and Avalanche strategies to find the fastest path to zero debt.",
+                addDebtBtn: "Add New Debt",
+                snowTitle: "Debt Snowball",
+                snowDesc: "Pay smallest debt balance first for quick psychological wins.",
+                avaTitle: "Debt Avalanche",
+                avaDesc: "Pay highest interest rate debt first to save maximum money.",
+                payoffEstimateLabel: "Estimated Debt-Free Time:",
+                payoffBoostNotice: "Plan accelerated automatically using monthly net surplus as extra payments.",
+                goToInvestBtn: "Proceed to Investment Strategy",
+                investPageTitle: "Compound Wealth Building Simulator",
+                investPageDesc: "Visualize the exponential power of investing monthly surplus over long horizons.",
+                monthlyInvestAmount: "Monthly Investment:",
+                annualReturnRate: "Expected Annual Return (%):",
+                investPeriodYears: "Horizon (Years):",
+                totalWealthForecast: "Future Portfolio Value:",
+                totalProfitEarned: "Net Compound Earnings:",
+                converterPageTitle: "Multi-Currency Converter",
+                converterPageDesc: "Convert values across major global and regional currencies seamlessly.",
+                convertAmount: "Amount to Convert:",
+                convertFrom: "From Currency:",
+                convertTo: "To Currency:",
+                convertedResultLabel: "Converted Value:",
+                guidePageTitle: "Smart Financial Wisdom & Principles",
+                guidePageDesc: "Battle-tested financial habits to ensure long term stability and success.",
+                rule1Title: "Build Emergency Fund First",
+                rule1Desc: "Before investing, keep 3 to 6 months of essential expenses in a liquid account.",
+                rule2Title: "Eliminate High Interest Debts",
+                rule2Desc: "Credit cards & personal loans erode wealth. Paying them off equals a guaranteed high return.",
+                rule3Title: "Dollar-Cost Averaging (DCA)",
+                rule3Desc: "Invest a fixed portion monthly regardless of market fluctuations to compound risk-free.",
+                rule4Title: "Avoid Lifestyle Inflation",
+                rule4Desc: "When income increases, divert extra cash straight into investments instead of expanding wants."
             }
         };
 
+        // Global State Variables
         let currentLang = 'ar';
         let currentStrategy = 'snowball';
-        let wealthChart = null;
+        let dashWealthChart = null;
+        let dashPieChart = null;
+        let investGrowthChart = null;
+
+        // Exchange Rates Matrix (Base USD)
+        const exchangeRates = {
+            USD: 1,
+            EGP: 48.5,
+            SAR: 3.75,
+            AED: 3.67,
+            KWD: 0.31,
+            EUR: 0.92
+        };
+
+        // Default Debts Data
         let debts = [
             { name: "بطاقة ائتمان / Credit Card", balance: 2000, minPay: 100, rate: 18 },
             { name: "قرض شخصي / Personal Loan", balance: 8000, minPay: 250, rate: 9 }
         ];
 
-        // System Setup on Initial Load
+        // System Initialization
         window.onload = function() {
             renderDebts();
-            initChart();
+            initCharts();
             calculateAll();
-            updateStrategyUI();
+            runCurrencyConversion();
         };
 
+        // Navigation Router
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`page-${pageId}`).classList.add('active');
+            document.getElementById(`nav-${pageId}`).classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Language Switcher
         function toggleLanguage() {
             currentLang = currentLang === 'ar' ? 'en' : 'ar';
             document.documentElement.lang = currentLang;
             document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
 
-            // Update Text Elements
+            // Swap all texts with data-i18n attributes
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (i18n[currentLang][key]) {
@@ -267,18 +713,19 @@
                 }
             });
 
-            document.getElementById('lang-btn-text').innerText = i18n[currentLang].langBtn;
-            document.getElementById('app-title').innerText = i18n[currentLang].appTitle;
+            document.getElementById('lang-btn-text').innerText = currentLang === 'ar' ? 'English' : 'العربية';
+            document.getElementById('app-title').innerText = currentLang === 'ar' ? 'منصة الحرية المالية' : 'Financial Freedom Roadmap';
+            
             renderDebts();
             calculateAll();
         }
 
+        // Currency Selector Update
         function updateCurrency() {
-            const select = document.getElementById('currency-select');
-            const symbol = select.options[select.selectedIndex].getAttribute('data-symbol');
-            
+            const symbol = getCurrencySymbol();
             document.querySelectorAll('.currency-symbol').forEach(el => el.innerText = symbol);
             calculateAll();
+            runCurrencyConversion();
         }
 
         function getCurrencySymbol() {
@@ -286,28 +733,29 @@
             return select.options[select.selectedIndex].getAttribute('data-symbol');
         }
 
+        // Debt Rows Generator
         function renderDebts() {
-            const container = document.getElementById('debts-container');
+            const container = document.getElementById('debt-items-list');
             container.innerHTML = '';
 
             debts.forEach((debt, index) => {
                 const div = document.createElement('div');
-                div.className = "grid grid-cols-12 gap-2 items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs md:text-sm";
+                div.className = "grid grid-cols-12 gap-2 items-center bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs md:text-sm";
                 div.innerHTML = `
                     <div class="col-span-4">
-                        <input type="text" value="${debt.name}" onchange="debts[${index}].name = this.value" placeholder="${i18n[currentLang].debtName}" class="w-full p-1.5 bg-white border border-slate-300 rounded">
+                        <input type="text" value="${debt.name}" onchange="debts[${index}].name = this.value" class="w-full p-2 bg-white border border-slate-300 rounded-lg">
                     </div>
                     <div class="col-span-3">
-                        <input type="number" value="${debt.balance}" oninput="debts[${index}].balance = parseFloat(this.value)||0; calculateAll()" placeholder="${i18n[currentLang].balance}" class="w-full p-1.5 bg-white border border-slate-300 rounded">
+                        <input type="number" value="${debt.balance}" oninput="debts[${index}].balance = parseFloat(this.value)||0; calculateAll()" class="w-full p-2 bg-white border border-slate-300 rounded-lg">
                     </div>
                     <div class="col-span-2">
-                        <input type="number" value="${debt.minPay}" oninput="debts[${index}].minPay = parseFloat(this.value)||0; calculateAll()" placeholder="${i18n[currentLang].minPayment}" class="w-full p-1.5 bg-white border border-slate-300 rounded">
+                        <input type="number" value="${debt.minPay}" oninput="debts[${index}].minPay = parseFloat(this.value)||0; calculateAll()" class="w-full p-2 bg-white border border-slate-300 rounded-lg">
                     </div>
                     <div class="col-span-2">
-                        <input type="number" value="${debt.rate}" oninput="debts[${index}].rate = parseFloat(this.value)||0; calculateAll()" placeholder="${i18n[currentLang].rate}" class="w-full p-1.5 bg-white border border-slate-300 rounded">
+                        <input type="number" value="${debt.rate}" oninput="debts[${index}].rate = parseFloat(this.value)||0; calculateAll()" class="w-full p-2 bg-white border border-slate-300 rounded-lg">
                     </div>
                     <div class="col-span-1 text-center">
-                        <button onclick="removeDebt(${index})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="removeDebt(${index})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
                 container.appendChild(div);
@@ -315,7 +763,7 @@
         }
 
         function addDebtRow() {
-            debts.push({ name: "دين جديد", balance: 1000, minPay: 50, rate: 10 });
+            debts.push({ name: currentLang === 'ar' ? "دين جديد" : "New Debt", balance: 1500, minPay: 75, rate: 12 });
             renderDebts();
             calculateAll();
         }
@@ -328,78 +776,112 @@
 
         function updateStrategy(strat) {
             currentStrategy = strat;
-            updateStrategyUI();
+            const snowBtn = document.getElementById('strat-btn-snowball');
+            const avaBtn = document.getElementById('strat-btn-avalanche');
+
+            if (strat === 'snowball') {
+                snowBtn.className = "p-4 rounded-2xl border-2 transition text-right flex items-center justify-between border-emerald-500 bg-emerald-50/50";
+                avaBtn.className = "p-4 rounded-2xl border-2 transition text-right flex items-center justify-between border-slate-200 bg-white";
+            } else {
+                avaBtn.className = "p-4 rounded-2xl border-2 transition text-right flex items-center justify-between border-emerald-500 bg-emerald-50/50";
+                snowBtn.className = "p-4 rounded-2xl border-2 transition text-right flex items-center justify-between border-slate-200 bg-white";
+            }
             calculateAll();
         }
 
-        function updateStrategyUI() {
-            const snowballLabel = document.getElementById('strat-snowball-label');
-            const avalancheLabel = document.getElementById('strat-avalanche-label');
-
-            if (currentStrategy === 'snowball') {
-                snowballLabel.className = "flex-1 text-center py-2 px-3 rounded-lg cursor-pointer text-sm font-medium transition bg-emerald-600 text-white shadow";
-                avalancheLabel.className = "flex-1 text-center py-2 px-3 rounded-lg cursor-pointer text-sm font-medium transition bg-slate-100 text-slate-600";
-            } else {
-                avalancheLabel.className = "flex-1 text-center py-2 px-3 rounded-lg cursor-pointer text-sm font-medium transition bg-emerald-600 text-white shadow";
-                snowballLabel.className = "flex-1 text-center py-2 px-3 rounded-lg cursor-pointer text-sm font-medium transition bg-slate-100 text-slate-600";
-            }
-        }
-
+        // Master Calculations Engine
         function calculateAll() {
-            const income = parseFloat(document.getElementById('income').value) || 0;
-            const fixedExp = parseFloat(document.getElementById('expenses-fixed').value) || 0;
-            const varExp = parseFloat(document.getElementById('expenses-variable').value) || 0;
             const symbol = getCurrencySymbol();
 
-            // Total Minimum Debt Payments
-            const totalMinDebtPay = debts.reduce((sum, d) => sum + d.minPay, 0);
-            
-            // Available Surplus
-            const surplus = income - (fixedExp + varExp + totalMinDebtPay);
-            document.getElementById('surplus-amount').innerText = `${surplus.toFixed(2)} ${symbol}`;
+            // 1. Budget Calculations
+            const salary = parseFloat(document.getElementById('budget-salary').value) || 0;
+            const extraInc = parseFloat(document.getElementById('budget-extra-income').value) || 0;
+            const totalIncome = salary + extraInc;
 
-            // Calculate Debt Payoff Time (Months)
-            let totalDebt = debts.reduce((sum, d) => sum + d.balance, 0);
+            const rent = parseFloat(document.getElementById('budget-rent').value) || 0;
+            const groceries = parseFloat(document.getElementById('budget-groceries').value) || 0;
+            const needsTotal = rent + groceries;
+
+            const fun = parseFloat(document.getElementById('budget-fun').value) || 0;
+            const otherVar = parseFloat(document.getElementById('budget-other').value) || 0;
+            const wantsTotal = fun + otherVar;
+
+            const minDebtsTotal = debts.reduce((sum, d) => sum + d.minPay, 0);
+            const totalExpenses = needsTotal + wantsTotal + minDebtsTotal;
+
+            const surplus = totalIncome - totalExpenses;
+
+            // 2. 50/30/20 Rule Breakdown UI
+            document.getElementById('analysis-needs-val').innerText = `${needsTotal.toFixed(2)} ${symbol}`;
+            document.getElementById('analysis-wants-val').innerText = `${wantsTotal.toFixed(2)} ${symbol}`;
+            document.getElementById('analysis-savings-val').innerText = `${surplus.toFixed(2)} ${symbol}`;
+
+            const needsPct = totalIncome > 0 ? ((needsTotal / totalIncome) * 100).toFixed(0) : 0;
+            const wantsPct = totalIncome > 0 ? ((wantsTotal / totalIncome) * 100).toFixed(0) : 0;
+            const savingsPct = totalIncome > 0 ? ((surplus / totalIncome) * 100).toFixed(0) : 0;
+
+            document.getElementById('analysis-needs-badge').innerText = `${needsPct}%`;
+            document.getElementById('analysis-wants-badge').innerText = `${wantsPct}%`;
+            document.getElementById('analysis-savings-badge').innerText = `${savingsPct}%`;
+
+            // 3. Debt Payoff Calculations
+            const totalDebtBalance = debts.reduce((sum, d) => sum + d.balance, 0);
             let monthsToPayoff = 0;
+            const monthlyPool = Math.max(0, surplus) + minDebtsTotal;
 
-            if (totalDebt > 0 && (surplus + totalMinDebtPay) > 0) {
-                // Simple Payoff Estimation Model
-                let monthlyPool = Math.max(0, surplus) + totalMinDebtPay;
-                monthsToPayoff = Math.ceil(totalDebt / monthlyPool);
+            if (totalDebtBalance > 0 && monthlyPool > 0) {
+                monthsToPayoff = Math.ceil(totalDebtBalance / monthlyPool);
             }
 
-            document.getElementById('debt-free-time').innerText = `${monthsToPayoff} ${currentLang === 'ar' ? 'شهر' : 'Months'}`;
+            document.getElementById('payoff-time-result').innerText = `${monthsToPayoff} ${currentLang === 'ar' ? 'شهر' : 'Months'}`;
 
-            // Calculate Future Wealth (Compound Growth After Debt Free)
-            const annualReturn = (parseFloat(document.getElementById('invest-rate').value) || 0) / 100;
-            const years = parseInt(document.getElementById('invest-years').value) || 0;
-            
-            let wealthData = [];
-            let labels = [];
+            // 4. Investment Compound Calculations
+            const monthlyInvest = parseFloat(document.getElementById('invest-monthly-val').value) || Math.max(0, surplus);
+            const annualReturn = (parseFloat(document.getElementById('invest-return-rate').value) || 8) / 100;
+            const years = parseInt(document.getElementById('invest-years-val').value) || 10;
+
             let currentBalance = 0;
-            let monthlyInvest = Math.max(0, surplus) + totalMinDebtPay; 
+            let totalContributions = 0;
+            let chartLabels = [];
+            let chartData = [];
 
             for (let y = 1; y <= years; y++) {
                 for (let m = 1; m <= 12; m++) {
                     currentBalance = (currentBalance + monthlyInvest) * (1 + annualReturn / 12);
+                    totalContributions += monthlyInvest;
                 }
-                wealthData.push(currentBalance.toFixed(2));
-                labels.push(`${currentLang === 'ar' ? 'سنة' : 'Year'} ${y}`);
+                chartLabels.push(`${currentLang === 'ar' ? 'سنة' : 'Yr'} ${y}`);
+                chartData.push(currentBalance.toFixed(2));
             }
 
-            document.getElementById('future-wealth').innerText = `${currentBalance.toFixed(2)} ${symbol}`;
+            const totalInterest = currentBalance - totalContributions;
 
-            updateChart(labels, wealthData);
+            document.getElementById('invest-total-wealth-output').innerText = `${currentBalance.toFixed(2)} ${symbol}`;
+            document.getElementById('invest-total-interest-output').innerText = `${totalInterest.toFixed(2)} ${symbol}`;
+
+            // 5. Update KPI Cards on Dashboard
+            document.getElementById('dash-surplus-val').innerText = `${surplus.toFixed(2)} ${symbol}`;
+            document.getElementById('dash-debt-val').innerText = `${totalDebtBalance.toFixed(2)} ${symbol}`;
+            document.getElementById('dash-debt-free-time').innerText = currentLang === 'ar' ? `خالٍ تماماً خلال ${monthsToPayoff} شهر` : `Debt-free in ${monthsToPayoff} mos`;
+            document.getElementById('dash-wealth-val').innerText = `${currentBalance.toFixed(2)} ${symbol}`;
+
+            const emergencyFundTarget = needsTotal * 6;
+            document.getElementById('dash-emergency-val').innerText = `${emergencyFundTarget.toFixed(2)} ${symbol}`;
+
+            // 6. Refresh Charts
+            updateChartsData(chartLabels, chartData, [needsTotal, wantsTotal, Math.max(0, surplus)]);
         }
 
-        function initChart() {
-            const ctx = document.getElementById('wealthChart').getContext('2d');
-            wealthChart = new Chart(ctx, {
+        // Initialize Charts with Chart.js
+        function initCharts() {
+            // Dashboard Line Chart
+            const ctx1 = document.getElementById('dashWealthChart').getContext('2d');
+            dashWealthChart = new Chart(ctx1, {
                 type: 'line',
                 data: {
                     labels: [],
                     datasets: [{
-                        label: 'الثروة الصافية المتراكمة',
+                        label: 'الثروة المتراكمة',
                         data: [],
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -407,20 +889,72 @@
                         tension: 0.3
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // Dashboard Pie Chart
+            const ctx2 = document.getElementById('dashBudgetPieChart').getContext('2d');
+            dashBudgetPieChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['الاحتياجات', 'الرغبات', 'الادخار/الفائض'],
+                    datasets: [{
+                        data: [50, 30, 20],
+                        backgroundColor: ['#f43f5e', '#f59e0b', '#10b981']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Investment Page Growth Chart
+            const ctx3 = document.getElementById('investGrowthChart').getContext('2d');
+            investGrowthChart = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'قيمة المحفظة',
+                        data: [],
+                        backgroundColor: '#6366f1'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
 
-        function updateChart(labels, data) {
-            if (wealthChart) {
-                wealthChart.data.labels = labels;
-                wealthChart.data.datasets[0].data = data;
-                wealthChart.update();
+        function updateChartsData(labels, wealthData, pieData) {
+            if (dashWealthChart) {
+                dashWealthChart.data.labels = labels;
+                dashWealthChart.data.datasets[0].data = wealthData;
+                dashWealthChart.update();
             }
+
+            if (dashBudgetPieChart) {
+                dashBudgetPieChart.data.datasets[0].data = pieData;
+                dashBudgetPieChart.update();
+            }
+
+            if (investGrowthChart) {
+                investGrowthChart.data.labels = labels;
+                investGrowthChart.data.datasets[0].data = wealthData;
+                investGrowthChart.update();
+            }
+        }
+
+        // Currency Conversion Logic
+        function runCurrencyConversion() {
+            const amount = parseFloat(document.getElementById('convert-amount-input').value) || 0;
+            const from = document.getElementById('convert-from-select').value;
+            const to = document.getElementById('convert-to-select').value;
+
+            // Convert via USD as base
+            const inUSD = amount / exchangeRates[from];
+            const result = inUSD * exchangeRates[to];
+
+            const rateSingle = (1 / exchangeRates[from]) * exchangeRates[to];
+
+            document.getElementById('conversion-result-output').innerText = `${result.toFixed(2)} ${to}`;
+            document.getElementById('conversion-rate-info').innerText = `1 ${from} = ${rateSingle.toFixed(4)} ${to}`;
         }
     </script>
 </body>
